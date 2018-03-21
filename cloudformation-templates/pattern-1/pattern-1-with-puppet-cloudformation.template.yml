@@ -447,8 +447,10 @@ Resources:
             set -e
             mkdir workspace
             cd workspace
-            git clone https://github.com/harshanl/cloudformation-is --depth 1
+            git clone https://github.com/azinneera/cloudformation-is
+            chown -R ubuntu cloudformation-is
             cd cloudformation-is
+            git checkout cloudformation-apim
             scripts/setup-env.sh -os ${OS} -rdsengine ${DBEngine} -wumuser ${WUMUsername} -wumpwd ${WUMPassword} -jdk ${JDK}
             scripts/setup-is.sh -os ${OS} -rdshost ${WSO2EnvDBInstance.Endpoint.Address} -rdsport ${WSO2EnvDBInstance.Endpoint.Port} -rdsengine ${DBEngine} -rdsversion ${DBEngineVersion} -rdsusername ${DBUsername} -rdspassword ${DBPassword} -lbhost ${WSO2EnvISApplicationLoadBalancer.DNSName} -pname ${ProductName} -pversion ${ProductVersion}
             cat /dev/null > ~/.bash_history && history -c

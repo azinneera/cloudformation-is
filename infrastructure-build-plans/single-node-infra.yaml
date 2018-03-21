@@ -24,8 +24,4 @@ infrastructureConfig:
 
 scenarioConfig:
   scenarios:
-    -  "scenario02"
-    -  "scenario12"
-    -  "scenario18"
-    -  "scenario21"
-    -  "scenario28"
+    -  "scenario01"
