@@ -26,17 +26,17 @@
     <!--
        Product Name
     -->
-    <Name>WSO2 Identity Server</Name>
+    <Name>WSO2 API Manager</Name>
 
     <!--
        machine readable unique key to identify each product
     -->
-    <ServerKey>IS</ServerKey>
+    <ServerKey>AM</ServerKey>
 
     <!--
        Product Version
     -->
-    <Version>5.3.0</Version>
+    <Version>2.1.0</Version>
 
     <!--
        Host name or IP address of the machine hosting this server
@@ -73,7 +73,7 @@
     Ex : <Role>.*</Role> means this server can act any role
     -->
     <ServerRoles>
-        <Role>IdentityServer</Role>
+        <Role>APIManager</Role>
     </ServerRoles>
 
     <!-- uncommnet this line to subscribe to a bam instance automatically -->
@@ -429,13 +429,11 @@
 	<!--Option to disable storing of tokens issued by STS-->
 	<DisableTokenStore>false</DisableTokenStore>
 
- <STSCallBackHandlerName>org.wso2.carbon.identity.provider.AttributeCallbackHandler</STSCallBackHandlerName>
-
 	<!--
 	 Security token store class name. If this is not set, default class will be
 	 org.wso2.carbon.security.util.SecurityTokenStore
 	-->
-	<TokenStoreClassName>org.wso2.carbon.identity.sts.store.DBTokenStore</TokenStoreClassName>
+	<!--<TokenStoreClassName>org.wso2.carbon.identity.sts.store.DBTokenStore</TokenStoreClassName>-->
 
         <XSSPreventionConfig>
             <Enabled>true</Enabled>
@@ -445,11 +443,11 @@
             </Patterns>
         </XSSPreventionConfig>
     </Security>
-<HideMenuItemIds>
+<!--<HideMenuItemIds>
 <HideMenuItemId>claim_mgt_menu</HideMenuItemId>
 <HideMenuItemId>identity_mgt_emailtemplate_menu</HideMenuItemId>
 <HideMenuItemId>identity_security_questions_menu</HideMenuItemId>
-</HideMenuItemIds>
+</HideMenuItemIds>-->
 
     <!--
        The temporary work directory

@@ -26,11 +26,12 @@ readonly POSTGRES_DB="wso2db"
 readonly SID="ORCL"
 
 # databases
-readonly UM_DB="wso2_um_db"
-readonly IDENTITY_DB="wso2_identity_db"
+#readonly UM_DB="wso2_um_db"
+#readonly IDENTITY_DB="wso2_identity_db"
+readonly AM_DB="wso2_am_db"
 readonly GOV_REG_DB="wso2_greg_db"
 readonly CONFIG_REG_DB="wso2_conf_db"
-readonly BPS_DB="wso2_bps_db"
+#readonly BPS_DB="wso2_bps_db"
 readonly METRICS_DB="wso2_metrics_db"
 
 UM_USER=$DB_USERNAME
@@ -61,22 +62,19 @@ setup_mysql_databases() {
     echo "MySQL setting up"
     echo ">> Setting up MySQL databases ..."
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $UM_DB; DROP DATABASE IF
-    EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $CONFIG_REG_DB; DROP DATABASE IF EXISTS $IDENTITY_DB; DROP DATABASE
-    IF EXISTS $BPS_DB; DROP DATABASE IF EXISTS $METRICS_DB; CREATE DATABASE $UM_DB; CREATE DATABASE $GOV_REG_DB;
-    CREATE DATABASE $CONFIG_REG_DB; CREATE DATABASE $IDENTITY_DB; CREATE DATABASE $BPS_DB; CREATE DATABASE $METRICS_DB;"
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $AM_DB; DROP DATABASE IF
+    EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $CONFIG_REG_DB; DROP DATABASE IF EXISTS $METRICS_DB;
+    CREATE DATABASE $AM_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $CONFIG_REG_DB; CREATE DATABASE $METRICS_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating tables..."
     if [[ $DB_VERSION == "5.7*" ]]; then
-        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPTS_PATH/mysql5.7.sql;
+        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $AM_DB; SOURCE $DB_SCRIPTS_PATH/mysql5.7.sql;
         USE $GOV_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql5.7.sql; USE $CONFIG_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql5.7.sql;
-        USE $IDENTITY_DB; SOURCE $DB_SCRIPTS_PATH/identity/mysql-5.7.sql; USE $BPS_DB; SOURCE $DB_SCRIPTS_PATH/bps/bpel/create/mysql5.7.sql;
         USE $METRICS_DB; SOURCE $DB_SCRIPTS_PATH/metrics/mysql.sql;"
     else
-        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
+        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $AM_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
         USE $GOV_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql; USE $CONFIG_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
-        USE $IDENTITY_DB; SOURCE $DB_SCRIPTS_PATH/identity/mysql.sql; USE $BPS_DB; SOURCE $DB_SCRIPTS_PATH/bps/bpel/create/mysql.sql;
         USE $METRICS_DB; SOURCE $DB_SCRIPTS_PATH/metrics/mysql.sql;"
     fi
     echo ">> Tables created!"
@@ -85,17 +83,14 @@ setup_mysql_databases() {
 setup_mariadb_databases() {
     echo ">> Setting up MariaDB databases ..."
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $UM_DB; DROP DATABASE IF
-    EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $CONFIG_REG_DB; DROP DATABASE IF EXISTS $IDENTI TY_DB; DROP DATABASE
-    IF EXISTS $BPS_DB; DROP DATABASE IF EXISTS $METRICS_DB; CREATE DATABASE $UM_DB; CREATE DATABASE $GOV_REG_DB;
-    CREATE DATABASE $CONFIG_REG_DB; CREATE DATABASE $IDENTITY_DB; CREATE DATABASE $BPS_DB; CREATE DATABASE $METRICS_DB;"
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $AM_DB; DROP DATABASE IF
+    EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $CONFIG_REG_DB; DROP DATABASE IF EXISTS $METRICS_DB;
+    CREATE DATABASE $AM_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $CONFIG_REG_DB; CREATE DATABASE $METRICS_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating tables..."
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $AM_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
     USE $GOV_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql; USE $CONFIG_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
-    USE $IDENTITY_DB; SOURCE $DB_SCRIPTS_PATH/identity/mysql.sql;
-    USE $BPS_DB; SOURCE $DB_SCRIPTS_PATH/bps/bpel/create/mysql.sql;
     USE $METRICS_DB; SOURCE $DB_SCRIPTS_PATH/metrics/mysql.sql;"
     echo ">> Tables created!"
 }
@@ -133,20 +128,21 @@ setup_oracle_databases() {
 setup_sqlserver_databases() {
     echo ">> Setting up SQLServer databases ..."
     echo ">> Creating databases..."
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $AM_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $GOV_REG_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $CONFIG_REG_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $METRICS_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $AM_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $UM_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $GOV_REG_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $CONFIG_REG_DB"
-    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $IDENTITY_DB"
-    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $BPS_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $METRICS_DB"
     echo ">> Databases created!"
 
     echo ">> Creating tables..."
-    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $UM_DB -i $DB_SCRIPTS_PATH/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $AM_DB -i $DB_SCRIPTS_PATH/mssql.sql
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $GOV_REG_DB -i $DB_SCRIPTS_PATH/mssql.sql
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $CONFIG_REG_DB -i $DB_SCRIPTS_PATH/mssql.sql
-    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $IDENTITY_DB -i $DB_SCRIPTS_PATH/identity/mssql.sql
-    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $BPS_DB -i $DB_SCRIPTS_PATH/bps/bpel/create/mssql.sql
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $METRICS_DB -i $DB_SCRIPTS_PATH/metrics/mssql.sql
 }
 
@@ -158,17 +154,13 @@ setup_postgres_databases() {
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $UM_DB;"
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $GOV_REG_DB;"
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $CONFIG_REG_DB;"
-    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $IDENTITY_DB;"
-    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $BPS_DB;"
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $METRICS_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating tables..."
-    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $UM_DB -f $DB_SCRIPTS_PATH/postgresql.sql
+    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $AM_DB -f $DB_SCRIPTS_PATH/postgresql.sql
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $GOV_REG_DB -f $DB_SCRIPTS_PATH/postgresql.sql
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $CONFIG_REG_DB -f $DB_SCRIPTS_PATH/postgresql.sql
-    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $IDENTITY_DB -f $DB_SCRIPTS_PATH/identity/postgresql.sql
-    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $BPS_DB -f $DB_SCRIPTS_PATH/bps/bpel/create/postgresql.sql
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $METRICS_DB -f $DB_SCRIPTS_PATH/metrics/postgresql.sql
     echo ">> Tables created!"
 }
@@ -210,7 +202,7 @@ configure_product() {
     DRIVER_CLASS=$(get_driver_class)
     echo ">> Configuring product "
     find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's/#_IS_LB_HOSTNAME_#/'$IS_HOST_NAME'/g'
-    find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's|#_UM_DB_CONNECTION_URL_#|'$(get_jdbc_connection_url $UM_DB)'|g'
+    find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's|#_AM_DB_CONNECTION_URL_#|'$(get_jdbc_connection_url $UM_DB)'|g'
     find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's/#_UM_USER_#/'$UM_USER'/g'
     find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's/#_UM_USER_PWD_#/'$UM_USER_PWD'/g'
     find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's|#_GOV_REG_DB_CONNECTION_URL_#|'$(get_jdbc_connection_url $GOV_REG_DB)'|g'

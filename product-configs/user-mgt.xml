@@ -27,7 +27,6 @@
             </AdminUser>
             <EveryOneRoleName>everyone</EveryOneRoleName> <!-- By default users in this role sees the registry root -->
             <Property name="isCascadeDeleteEnabled">true</Property>
-            <Property name="initializeNewClaimManager">true</Property>
             <Property name="dataSource">jdbc/WSO2_UM_DB</Property>
         </Configuration>
 
@@ -50,13 +49,12 @@
             <Property name="UsernameJavaRegExViolationErrorMsg">Username pattern policy violated</Property>
             <Property name="PasswordJavaRegEx">^[\S]{5,30}$</Property>
             <Property name="PasswordJavaScriptRegEx">^[\S]{5,30}$</Property>
-            <Property name="PasswordJavaRegExViolationErrorMsg">Password length should be within 5 to 30 characters
-            </Property>
+            <Property name="PasswordJavaRegExViolationErrorMsg">Password length should be within 5 to 30 characters</Property>
             <Property name="RolenameJavaRegEx">^[\S]{3,30}$</Property>
             <Property name="RolenameJavaScriptRegEx">^[\S]{3,30}$</Property>
             <Property name="CaseInsensitiveUsername">true</Property>
             <Property name="SCIMEnabled">false</Property>
-            <Property name="IsBulkImportSupported">false</Property>
+            <Property name="IsBulkImportSupported">true</Property>
             <Property name="PasswordDigest">SHA-256</Property>
             <Property name="StoreSaltedPassword">true</Property>
             <Property name="MultiAttributeSeparator">,</Property>
