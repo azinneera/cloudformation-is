@@ -1,18 +1,18 @@
-# TestGrid configuration file.
 version: '0.9'
 infrastructureConfig:
   iacProvider: CLOUDFORMATION
   infrastructureProvider: AWS
   containerOrchestrationEngine: None
   parameters:
-    - JDK : ORACLE_JDK8
+    JDK : ORACLE_JDK8
+    OS  : Ubuntu_16.04
   provisioners:
-    - name: 01-two-node-deployment
-      description: Provision Infra for a two node IS cluster
-      dir: cloudformation-templates/pattern-1
+    - name: 01-dummy-deployment
+      description: Provision Infra for a dummy deployment
+      dir: .
       scripts:
-        - name: infra-for-two-node-deployment
-          description: Creates infrastructure for a IS two node deployment.
+        - name: infra-for-APIM-deployment
+          description: Creates infrastructure for a IS node deployment.
           type: CLOUDFORMATION
           file: pattern-1-with-puppet-cloudformation.template.yml
           inputParameters:
@@ -31,29 +31,3 @@ deploymentConfig:
           description: Do an APIM single node deployment.
           file: pattern-1-with-puppet-cloudformation.template.yml
           inputParameters:
-scenarioConfig:
-  scenarios:
-  -
-    name: scenario01
-    description: 'API Development'
-    dir: scenario01
-  -
-    name: scenario03
-    description: 'App Development with APIs'
-    dir: scenario03
-  -
-    name: scenario04
-    description: 'API Lifecycle Management'
-    dir: scenario04
-  -
-    name: scenario05
-    description: 'API Versioning'
-    dir: scenario05
-  -
-    name: scenario06
-    description: 'API Governance'
-    dir: scenario06
-  -
-    name: scenario09
-    description: 'Developer Enablement and Community Building'
-    dir: scenario09

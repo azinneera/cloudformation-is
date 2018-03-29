@@ -89,13 +89,16 @@ setup_mysql_databases() {
 setup_mariadb_databases() {
     echo ">> Setting up MariaDB databases ..."
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $AM_DB; DROP DATABASE IF
-    EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $CONFIG_REG_DB; DROP DATABASE IF EXISTS $METRICS_DB;
-    CREATE DATABASE $AM_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $CONFIG_REG_DB; CREATE DATABASE $METRICS_DB;"
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $AM_DB;
+    DROP DATABASE IF EXISTS $MB_DB; DROP DATABASE IF EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $CONFIG_REG_DB;
+    DROP DATABASE IF EXISTS $METRICS_DB;
+    CREATE DATABASE $AM_DB; CREATE DATABASE $MB_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $CONFIG_REG_DB;
+    CREATE DATABASE $METRICS_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating tables..."
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $AM_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $AM_DB; SOURCE $DB_SCRIPTS_PATH/apimgt/mysql.sql;
+    USE $MB_DB; SOURCE $DB_SCRIPTS_PATH/mb-store/mysql-mb.sql;
     USE $GOV_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql; USE $CONFIG_REG_DB; SOURCE $DB_SCRIPTS_PATH/mysql.sql;
     USE $METRICS_DB; SOURCE $DB_SCRIPTS_PATH/metrics/mysql.sql;"
     echo ">> Tables created!"
@@ -103,30 +106,25 @@ setup_mariadb_databases() {
 
 setup_oracle_databases() {
     export ORACLE_SID=$SID
-    UM_USER=$UM_DB
     GOV_REG_USER=$GOV_REG_DB
     CONFIG_REG_USER=$CONFIG_REG_DB
-    IDENTITY_USER=$IDENTITY_DB
-    BPS_USER=$BPS_DB
     METRICS_USER=$METRICS_DB
 
     echo ">> Setting up Oracle user create script ..."
     #Create database scripts
-    echo "CREATE USER $UM_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $UM_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $UM_DB;" >> oracle.sql
-    echo "CREATE USER $IDENTITY_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $IDENTITY_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $IDENTITY_DB;" >> oracle.sql
+    echo "CREATE USER $AM_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $AM_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $AM_DB;" >> oracle.sql
+    echo "CREATE USER $MB_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $MB_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $MB_DB;" >> oracle.sql
     echo "CREATE USER $GOV_REG_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $GOV_REG_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $GOV_REG_DB;" >> oracle.sql
     echo "CREATE USER $CONFIG_REG_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $CONFIG_REG_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $CONFIG_REG_DB;" >> oracle.sql
-    echo "CREATE USER $BPS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $BPS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $BPS_DB;" >> oracle.sql
     echo "CREATE USER $METRICS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $METRICS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $METRICS_DB;" >> oracle.sql
 
     echo ">> Setting up Oracle schemas ..."
     echo exit | sqlplus64 $DB_USERNAME/$DB_PASSWORD@//$DB_HOST/$SID @oracle.sql
     echo ">> Setting up Oracle tables ..."
-    echo exit | sqlplus64 $UM_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/oracle.sql
+    echo exit | sqlplus64 $AM_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/oracle.sql
+    echo exit | sqlplus64 $MB_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/oracle.sql
     echo exit | sqlplus64 $GOV_REG_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/oracle.sql
     echo exit | sqlplus64 $CONFIG_REG_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/oracle.sql
-    echo exit | sqlplus64 $IDENTITY_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/identity/oracle.sql
-    echo exit | sqlplus64 $BPS_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/bps/bpel/create/oracle.sql
     echo exit | sqlplus64 $METRICS_DB/$DB_PASSWORD@//$DB_HOST/$SID @$DB_SCRIPTS_PATH/metrics/oracle.sql
     echo ">> Tables created ..."
 }
@@ -135,10 +133,12 @@ setup_sqlserver_databases() {
     echo ">> Setting up SQLServer databases ..."
     echo ">> Creating databases..."
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $AM_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $MB_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $GOV_REG_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $CONFIG_REG_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "DROP DATABASE IF EXISTS $METRICS_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $AM_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $MB_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $GOV_REG_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $CONFIG_REG_DB"
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $METRICS_DB"
@@ -146,6 +146,7 @@ setup_sqlserver_databases() {
 
     echo ">> Creating tables..."
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $AM_DB -i $DB_SCRIPTS_PATH/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $MB_DB -i $DB_SCRIPTS_PATH/mssql.sql
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $GOV_REG_DB -i $DB_SCRIPTS_PATH/mssql.sql
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $CONFIG_REG_DB -i $DB_SCRIPTS_PATH/mssql.sql
     sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $METRICS_DB -i $DB_SCRIPTS_PATH/metrics/mssql.sql
@@ -157,6 +158,7 @@ setup_postgres_databases() {
     echo ">> Setting up Postgres databases ..."
     echo ">> Creating databases..."
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $AM_DB;"
+    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $MB_DB;"
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $GOV_REG_DB;"
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $CONFIG_REG_DB;"
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "CREATE DATABASE $METRICS_DB;"
@@ -164,6 +166,7 @@ setup_postgres_databases() {
 
     echo ">> Creating tables..."
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $AM_DB -f $DB_SCRIPTS_PATH/postgresql.sql
+    psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $MB_DB -f $DB_SCRIPTS_PATH/postgresql.sql
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $GOV_REG_DB -f $DB_SCRIPTS_PATH/postgresql.sql
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $CONFIG_REG_DB -f $DB_SCRIPTS_PATH/postgresql.sql
     psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d $METRICS_DB -f $DB_SCRIPTS_PATH/metrics/postgresql.sql
