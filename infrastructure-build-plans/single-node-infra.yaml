@@ -24,4 +24,10 @@ infrastructureConfig:
 
 scenarioConfig:
   scenarios:
-    -  "scenario01"
+    - name: scenario01
+      description: 'API Development'
+      dir: scenario01
+    - name: scenario02
+      description: 'API security'
+      dir: scenario02
+
