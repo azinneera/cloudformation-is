@@ -98,7 +98,7 @@ Parameters:
     MinLength: 6
     ConstraintDescription: minimum - 6 characters
   DBClass:
-    Default: db.t2.micro
+    Default: db.m4.large
     Description: Database instance class
     Type: String
     AllowedValues:
@@ -159,7 +159,7 @@ Parameters:
     Description: Enter product name
   ProductVersion:
     Type: String
-    Default: "5.5.0"
+    Default: "5.3.0"
     Description: Enter product version
   OS:
     Type: String
@@ -449,6 +449,7 @@ Resources:
             cd workspace
             git clone https://github.com/harshanl/cloudformation-is --depth 1
             cd cloudformation-is
+            git checkout 5.3.0
             scripts/setup-env.sh -os ${OS} -rdsengine ${DBEngine} -wumuser ${WUMUsername} -wumpwd ${WUMPassword} -jdk ${JDK}
             scripts/setup-is.sh -os ${OS} -rdshost ${WSO2EnvDBInstance.Endpoint.Address} -rdsport ${WSO2EnvDBInstance.Endpoint.Port} -rdsengine ${DBEngine} -rdsversion ${DBEngineVersion} -rdsusername ${DBUsername} -rdspassword ${DBPassword} -lbhost ${WSO2EnvISApplicationLoadBalancer.DNSName} -pname ${ProductName} -pversion ${ProductVersion}
             cat /dev/null > ~/.bash_history && history -c
